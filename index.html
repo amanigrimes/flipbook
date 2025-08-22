@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flipbook Viewer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #flipbook {
+      width: 90%;
+      height: 90vh;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="flipbook"></div>
+
+  <script>
+    const PDF_URL = "https://drive.google.com/uc?export=download&id=1P_lsFVbGjZTF-kVis9Q50zdQZhxPORNx";
+
+    const flipbook = document.getElementById("flipbook");
+
+    pdfjsLib.getDocument(PDF_URL).promise.then(pdf => {
+      let totalPages = pdf.numPages;
+
+      for (let i = 1; i <= totalPages; i++) {
+        let canvas = document.createElement("canvas");
+        flipbook.appendChild(canvas);
+
+        pdf.getPage(i).then(page => {
+          let viewport = page.getViewport({ scale: 1.5 });
+          let context = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          page.render({ canvasContext: context, viewport: viewport });
+        });
+      }
+
+      setTimeout(() => {
+        $("#flipbook").turn({
+          width: 800,
+          height: 600,
+          autoCenter: true
+        });
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
